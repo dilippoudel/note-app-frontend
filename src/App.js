@@ -13,7 +13,7 @@ function App() {
   const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [message, setMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -24,10 +24,20 @@ function App() {
     try {
       await noteService.update(id, changeNote)
       let newData = await noteService.getAll()
+      const newMessage = {
+        ...message,
+        error: `Note updated successfully`,
+      }
+      setMessage(newMessage)
+      setTimeout(() => setMessage(null), 3000)
       setNotes(newData)
     } catch (err) {
-      setErrorMessage(`Note '${note.content}' was already deleted from server`)
-      setTimeout(() => setErrorMessage(null), 3000)
+      const newMessage = {
+        ...message,
+        error: `Note '${note.content}' was already deleted from server`,
+      }
+      setMessage(newMessage)
+
       setNotes(notes.filter((note) => note.id !== id))
     }
   }
@@ -36,7 +46,7 @@ function App() {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
-      noteService.setToken(user.token)
+      noteService.setToken(loggedUserJSON.token)
     }
   }, [])
   useEffect(() => {
@@ -45,17 +55,22 @@ function App() {
   const notesToShowAll = showAll
     ? notes
     : notes.filter((note) => note.important === true)
-  const addNote = (event) => {
+  const addNote = async (event) => {
     event.preventDefault()
     const noteObject = {
       content: newNote,
       date: new Date(),
       important: Math.random() < 0.5,
     }
-    noteService.create(noteObject).then((returnedNote) => {
-      setNotes(notes.concat(returnedNote))
-      setNewNote('')
-    })
+    const response = await noteService.create(noteObject)
+    setNotes(notes.concat(response))
+    const newMessage = {
+      ...message,
+      success: 'Succssfully added new Note',
+    }
+    setMessage(newMessage)
+    setTimeout(() => setMessage(null), 3000)
+    setNewNote('')
   }
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -65,7 +80,14 @@ function App() {
         password,
       })
 
-      setUser(loggedInUser)
+      setUser(loggedInUser.data)
+      console.log('user is ', loggedInUser)
+      const newMessage = {
+        ...message,
+        success: `welcome back`,
+      }
+      setMessage(newMessage)
+      setTimeout(() => setMessage(null), 3000)
 
       setUsername('')
       setPassword('')
@@ -74,11 +96,16 @@ function App() {
         JSON.stringify(loggedInUser),
       )
       noteService.setToken(user.token)
-    } catch (exception) {
-      setErrorMessage('wrong credential')
+    } catch (error) {
+      const newMessage = {
+        ...message,
+        error: 'Wrong Credential',
+      }
+      setMessage(newMessage)
       setTimeout(() => {
-        setErrorMessage(null)
-      }, 4000)
+        setMessage(null)
+      }, 3000)
+      console.log('error in username or password')
     }
   }
 
@@ -89,13 +116,13 @@ function App() {
   return (
     <div>
       <h1>Notes Application</h1>
-      <Notification message={errorMessage} />
+      <Notification message={message} />
       {user === null ? (
         <Togglable buttonLabel="Log in">
           <LoginForm
             handleSubmit={handleLogin}
             handleUsernameChange={({ target }) => setUsername(target.value)}
-            handlePasswordChange={({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
             username={username}
             password={password}
           />
@@ -103,6 +130,14 @@ function App() {
       ) : (
         <div>
           <p>{user.name} logged in</p>
+          <button
+            onClick={() => {
+              window.localStorage.clear()
+              setUser(null)
+            }}
+          >
+            Log Out
+          </button>
           <Togglable buttonLabel="create new note">
             <NoteForm
               onSubmit={addNote}

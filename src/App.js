@@ -11,11 +11,8 @@ import Footer from './components/Footer/Footer'
 
 function App() {
   const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
   const [message, setMessage] = useState(null)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const toogleImportanceOf = async (id) => {
@@ -52,28 +49,30 @@ function App() {
   useEffect(() => {
     noteService.getAll().then((initialNotes) => setNotes(initialNotes))
   }, [])
+
   const notesToShowAll = showAll
     ? notes
     : notes.filter((note) => note.important === true)
-  const addNote = async (event) => {
-    event.preventDefault()
-    const noteObject = {
-      content: newNote,
-      date: new Date(),
-      important: Math.random() < 0.5,
+  const addNote = async (noteObject) => {
+    try {
+      const response = await noteService.create(noteObject)
+      setNotes(notes.concat(response))
+      const newMessage = {
+        ...message,
+        success: 'Succssfully added new Note',
+      }
+      setMessage(newMessage)
+      setTimeout(() => setMessage(null), 3000)
+    } catch (error) {
+      const newMessage = {
+        ...message,
+        error: 'Note validations error',
+      }
+      setMessage(newMessage)
+      setTimeout(() => setMessage(null), 3000)
     }
-    const response = await noteService.create(noteObject)
-    setNotes(notes.concat(response))
-    const newMessage = {
-      ...message,
-      success: 'Succssfully added new Note',
-    }
-    setMessage(newMessage)
-    setTimeout(() => setMessage(null), 3000)
-    setNewNote('')
   }
-  const handleLogin = async (event) => {
-    event.preventDefault()
+  const handleLogin = async (username, password) => {
     try {
       const loggedInUser = await loginService.login({
         username,
@@ -94,9 +93,6 @@ function App() {
 
       setMessage(newMessage)
       setTimeout(() => setMessage(null), 3000)
-
-      setUsername('')
-      setPassword('')
     } catch (error) {
       const newMessage = {
         ...message,
@@ -110,23 +106,13 @@ function App() {
     }
   }
 
-  const handleNoteChange = (e) => {
-    setNewNote(e.target.value)
-  }
-
   return (
     <div>
       <h1>Notes Application</h1>
       <Notification message={message} />
       {user === null ? (
         <Togglable buttonLabel="Log in">
-          <LoginForm
-            handleSubmit={handleLogin}
-            handleUsernameChange={({ target }) => setUsername(target.value)}
-            handlePasswordChange={({ target }) => setPassword(target.value)}
-            username={username}
-            password={password}
-          />
+          <LoginForm handleSubmit={handleLogin} />
         </Togglable>
       ) : (
         <div>
@@ -140,11 +126,7 @@ function App() {
             Log Out
           </button>
           <Togglable buttonLabel="create new note">
-            <NoteForm
-              onSubmit={addNote}
-              value={newNote}
-              handleChange={handleNoteChange}
-            />
+            <NoteForm createNote={addNote} />
           </Togglable>
         </div>
       )}

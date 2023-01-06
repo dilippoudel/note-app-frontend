@@ -26,7 +26,7 @@ function App() {
       let newData = await noteService.getAll()
       const newMessage = {
         ...message,
-        error: `Note updated successfully`,
+        success: `Note updated successfully`,
       }
       setMessage(newMessage)
       setTimeout(() => setMessage(null), 3000)
@@ -106,6 +106,7 @@ function App() {
       setTimeout(() => {
         setMessage(null)
       }, 3000)
+      console.log('error in username or password')
     }
   }
 

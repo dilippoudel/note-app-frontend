@@ -44,8 +44,8 @@ function App() {
   useEffect(() => {
     const loggedUserJSON = localStorage.getItem('loggedNoteappUser')
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      const loggedUser = JSON.parse(loggedUserJSON)
+      setUser(loggedUser)
       noteService.setToken(loggedUserJSON.token)
     }
   }, [])
@@ -80,32 +80,32 @@ function App() {
         password,
       })
 
-      setUser(loggedInUser.data)
+      setUser(loggedInUser)
       console.log('user is ', loggedInUser)
+      window.localStorage.setItem(
+        'loggedNoteappUser',
+        JSON.stringify(loggedInUser),
+      )
+      noteService.setToken(loggedInUser.token)
       const newMessage = {
         ...message,
         success: `welcome back`,
       }
+
       setMessage(newMessage)
       setTimeout(() => setMessage(null), 3000)
 
       setUsername('')
       setPassword('')
-      window.localStorage.setItem(
-        'loggedNoteappUser',
-        JSON.stringify(loggedInUser),
-      )
-      noteService.setToken(user.token)
     } catch (error) {
       const newMessage = {
         ...message,
-        error: 'Wrong Credential',
+        error: 'error in username or password',
       }
       setMessage(newMessage)
       setTimeout(() => {
         setMessage(null)
       }, 3000)
-      console.log('error in username or password')
     }
   }
 

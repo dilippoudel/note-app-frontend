@@ -23,7 +23,7 @@ function App() {
       let newData = await noteService.getAll()
       const newMessage = {
         ...message,
-        success: `Note updated successfully`,
+        success: 'Note updated successfully',
       }
       setMessage(newMessage)
       setTimeout(() => setMessage(null), 3000)
@@ -89,7 +89,7 @@ function App() {
       noteService.setToken(loggedInUser.token)
       const newMessage = {
         ...message,
-        success: `welcome back`,
+        success: 'welcome back',
       }
 
       setMessage(newMessage)

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import noteService from './services/notes'
 import loginService from './services/login'
@@ -57,6 +57,7 @@ function App() {
     try {
       const response = await noteService.create(noteObject)
       setNotes(notes.concat(response))
+      noteFormRef.current.toggleVisibility()
       const newMessage = {
         ...message,
         success: 'Succssfully added new Note',
@@ -105,6 +106,7 @@ function App() {
       console.log('error in username or password')
     }
   }
+  const noteFormRef = useRef()
 
   return (
     <div>
@@ -125,7 +127,7 @@ function App() {
           >
             Log Out
           </button>
-          <Togglable buttonLabel="create new note">
+          <Togglable buttonLabel="create new note" ref={noteFormRef}>
             <NoteForm createNote={addNote} />
           </Togglable>
         </div>

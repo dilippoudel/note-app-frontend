@@ -79,9 +79,7 @@ function App() {
         username,
         password,
       })
-
       setUser(loggedInUser)
-      console.log('user is ', loggedInUser)
       window.localStorage.setItem(
         'loggedNoteappUser',
         JSON.stringify(loggedInUser),

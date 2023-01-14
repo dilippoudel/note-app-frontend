@@ -1,7 +1,5 @@
 import axios from 'axios'
-// need to change before deploying
-// const baseUrl = '/api/notes/'
-const baseUrl = 'http://localhost:3001/api/notes'
+const baseUrl = '/api/notes'
 
 let token = null
 const setToken = (newToken) => {
@@ -13,7 +11,6 @@ const getAll = async () => {
   return response.data
 }
 const create = async (newObject) => {
-  console.log('token is ', token)
   const config = {
     headers: { Authorization: token },
   }

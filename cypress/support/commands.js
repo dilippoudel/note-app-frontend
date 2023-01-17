@@ -1,10 +1,17 @@
 Cypress.Commands.add('login', ({ username, password }) => {
-  cy.request('POST', 'http://localhost:3001/api/login', {
-    username,
-    password,
-  }).then(({ body }) => {
-    console.log('body is ', body)
-    localStorage.setItem('loggedNoteappUser', JSON.stringify(body))
+  cy.request({
+    method: 'POST',
+    url: 'http://localhost:3001/api/login',
+    body: {
+      username,
+      password,
+    },
+    failOnStatusCode: false,
+  }).then((response) => {
+    window.localStorage.setItem(
+      'loggedNoteappUser',
+      JSON.stringify(response.body)
+    )
     cy.visit('http://localhost:3000')
   })
 })
@@ -15,9 +22,7 @@ Cypress.Commands.add('createNote', ({ content, important }) => {
     method: 'POST',
     body: { content, important },
     headers: {
-      Authorization: `bearer ${JSON.parse(
-        localStorage.getItem('loggedNoteappUser').token
-      )}`,
+      Authorization: `bearer ${JSON.parse(cy.getAllLocalStorage().token)}`,
     },
   })
 

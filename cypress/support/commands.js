@@ -8,11 +8,12 @@ Cypress.Commands.add('login', ({ username, password }) => {
     },
     failOnStatusCode: false,
   }).then((response) => {
+    console.log('response is ', response.body)
+    cy.visit('http://localhost:3000')
     window.localStorage.setItem(
       'loggedNoteappUser',
       JSON.stringify(response.body)
     )
-    cy.visit('http://localhost:3000')
   })
 })
 

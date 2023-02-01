@@ -43,7 +43,7 @@ function App() {
     if (loggedUserJSON) {
       const loggedUser = JSON.parse(loggedUserJSON)
       setUser(loggedUser)
-      noteService.setToken(loggedUserJSON.token)
+      noteService.setToken(loggedUser.token)
     }
   }, [])
   useEffect(() => {
@@ -82,7 +82,7 @@ function App() {
       setUser(loggedInUser)
       window.localStorage.setItem(
         'loggedNoteappUser',
-        JSON.stringify(loggedInUser),
+        JSON.stringify(loggedInUser)
       )
       noteService.setToken(loggedInUser.token)
       const newMessage = {

@@ -3,6 +3,7 @@ const baseUrl = '/api/notes'
 
 let token = null
 const setToken = (newToken) => {
+  console.log('new token is ', token)
   token = `bearer ${newToken}`
 }
 const getAll = async () => {

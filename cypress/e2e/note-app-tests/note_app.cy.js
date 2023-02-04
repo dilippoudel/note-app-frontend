@@ -1,13 +1,13 @@
 describe('Note app', function () {
   beforeEach(function () {
-    cy.request('POST', 'http://localhost:3001/api/testing/reset')
+    cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
     const user = {
       name: 'Dilip Poudel',
       username: 'dilip123',
       password: 'dilip123',
     }
-    cy.request('POST', 'http://localhost:3001/api/users/', user)
-    cy.visit('http://localhost:3000')
+    cy.request('POST', `${Cypress.env('BACKEND')}/users`, user)
+    cy.visit('')
   })
 
   it('front page can be opened', function () {
@@ -43,9 +43,13 @@ describe('Note app', function () {
     })
     describe('and a note exixts', function () {
       beforeEach(function () {
-        cy.contains('create new note').click()
-        cy.get('input').type('another note cypress')
-        cy.contains('Submit').click()
+        cy.createNote({
+          content: 'another note cypress',
+          importante: true,
+        })
+        // cy.contains('create new note').click()
+        // cy.get('input').type('another note cypress')
+        // cy.contains('Submit').click()
       })
       it('it can be made important', function () {
         cy.contains('another note cypress').contains('Make important').click()

@@ -8,4 +8,5 @@ module.exports = defineConfig({
   env: {
     BACKEND: 'http://localhost:3001/api',
   },
+  video: false,
 })
